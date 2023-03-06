@@ -1,0 +1,20 @@
+CMPS3162 - Quiz #1
+Due: March 8, 2022 at 11:30 pm
+
+Complete the following tasks.
+
+1. Create an initial database design for the app that you intend to
+   build. Use the tool foound at https://dbdiagram.io/home. Provide a
+   PDF vresion of your ERD.
+   
+2. Create a database in PostgreSQL that will be used to persist the data
+   for your web application
+   
+
+Submission:
+
+1. Create a git repositiory named 3161 that will contain your ERD.
+   3162
+     |----> quiz-1
+               |-----> erd.pdf
+

@@ -1,0 +1,34 @@
+CMPS3162 - Quiz #2
+Due: March 15, 2022 at 11:30 pm
+
+Complete the following tasks.
+
+1. Create a directory structure for your web application.
+
+   projectname
+        |-----> cmd
+                 |-----> web
+        |-----> internal
+                    |-----> models
+        |-----> ui
+        |-----> go.mod
+        
+   
+2. Place your project under version control.
+
+3. Setup a server, handlers, and routes for your application.
+
+4. Create the tables, and add initial data to the tables using
+   database migrations.
+   
+
+Submission:
+
+1. Push quiz-2 on a new branch to the 3162 GitHub repository. The
+   repo should resemble the structure below.
+   3162
+     |----> quiz-1
+               |-----> erd.pdf
+     |----> quiz-2
+               |-----> projectname
+
