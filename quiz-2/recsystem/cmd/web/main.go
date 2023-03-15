@@ -59,7 +59,7 @@ func main() {
 	log.Fatal(err) //should not reach here
 }
 
-// Get a database connection pool
+// Function to open the database connection and setup the database connection pool
 func openDB(dsn string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", dsn)
 	if err != nil {
