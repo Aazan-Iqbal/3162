@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS users (
   dob date NOT NULL,
   address varchar(255) NOT NULL,
   phone_number varchar(255) NOT NULL,
-  roles_id int REFERENCES "roles" ("roles_id"),
+  roles_id int NOT NULL REFERENCES "roles" ("roles_id"),
   password varchar(255) NOT NULL
 );
