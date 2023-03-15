@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS "logs" (
   "users_id" bigserial REFERENCES "users" ("users_id"),
   "purpose" varchar(255) NOT NULL,
   "duration" int NOT NULL,
-  "sign_in_time" TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  "sign_in_time" TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
