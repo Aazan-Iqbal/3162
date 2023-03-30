@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS feedback
+DROP TABLE IF EXISTS "feedback" Cascade;

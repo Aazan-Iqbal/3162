@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS equipment_usage_log
+DROP TABLE IF EXISTS "equipment_usage_log" CASCADE;

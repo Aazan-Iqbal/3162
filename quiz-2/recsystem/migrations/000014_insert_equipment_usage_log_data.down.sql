@@ -1,1 +1,1 @@
-DELETE FROM "equipment_usage_log";
+DELETE FROM "equipment_usage_log" CASCADE;

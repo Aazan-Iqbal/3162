@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS equipments
+DROP TABLE IF EXISTS "equipments" CASCADE;
