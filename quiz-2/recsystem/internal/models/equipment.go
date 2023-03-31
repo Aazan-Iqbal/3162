@@ -10,9 +10,9 @@ import (
 
 // Let's model the users table
 type Equipment struct {
-	equipment_id int64
-	name         string
-	//image             []byte
+	equipment_id      int64
+	name              string
+	image             []byte
 	equipment_type_id int32
 	status            bool
 	availability      bool
@@ -30,11 +30,12 @@ func (m *EquipmentModel) Get() (*Equipment, error) {
 	statement := `
 	            SELECT *
 				FROM equipment
-				LIMIT 20
-	             `
+				ORDER BY RANDOM()
+				LIMIT 1
+	            `
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.equipment_id, &q.name, /*&q.image,*/
+	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.equipment_id, &q.name, &q.image,
 		&q.equipment_type_id, &q.status, &q.availability)
 	if err != nil {
 		return nil, err
@@ -46,20 +47,20 @@ func (m *EquipmentModel) Get() (*Equipment, error) {
 func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int32,
 	status bool, availability bool) (int64, error) {
 
-	statement := `
+	sql := `
 	INSERT INTO equipment (name, image, equipment_type_id, status, availability)
 	VALUES($1,$2,$3,$4,$5)
 	RETURNING equipment_id				
 	`
 	// ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	// defer cancel()
-	st, err := m.DB.Prepare(statement)
+	statement, err := m.DB.Prepare(sql)
 	if err != nil {
 		return 0, err
 	}
-	defer st.Close()
+	defer statement.Close()
 
-	result, err := st.Exec(name, image, equipment_type_id, status, availability)
+	result, err := statement.Exec(name, image, equipment_type_id, status, availability)
 	// err := m.DB.QueryRowContext(ctx, statement, name /*image,*/, equipment_type_id, status, availability).Scan(&id)
 	if err != nil {
 		return 0, err
@@ -81,21 +82,38 @@ func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int
 
 // function to delete a piece of equipment from the database
 func (m *EquipmentModel) Delete(equip_id int64) (int64, error) {
-	var id int64
 
-	statement := `
+	sql := `
 	DELETE FROM equipment
-	WHERE equipment_id = ($1)				
+	WHERE equipment_id = $1
 	`
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	// does the deletion and returns the id of the deleted equipment to be used for
-	// confirmation of deletion
-	err := m.DB.QueryRowContext(ctx, statement, equip_id).Scan(&id)
+	// ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	// defer cancel()
+	statement, err := m.DB.Prepare(sql)
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	defer statement.Close()
+	// does the deletion and returns the id of the deleted equipment to be used for
+	// confirmation of deletion
+	result, err := statement.Exec(equip_id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return 0, err
+	}
+
+	if rowsAffected == 1 {
+		fmt.Println("Insertion successful")
+	} else {
+		fmt.Println("Insertion failed")
+	}
+
+	return rowsAffected, nil
 }
 
 // function to mark a peice of equipment as borrowed in the database
@@ -105,7 +123,7 @@ func (m *EquipmentModel) Borrow(equip_id int64) (int64, error) {
 	statement := `
 	UPDATE equipment
 	SET status = false
-	WHERE equipment_id = ($1);		
+	WHERE equipment_id = ($1)	
 	`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
