@@ -17,8 +17,8 @@ import (
 
 // create a new type
 type application struct {
-	user models.UserModel
-	//responses models.ResponseModel
+	user  models.UserModel
+	users models.UserModel
 	//options models.OptionsModel
 }
 

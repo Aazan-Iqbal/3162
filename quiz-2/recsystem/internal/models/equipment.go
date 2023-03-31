@@ -9,9 +9,12 @@ import (
 
 // Let's model the users table
 type Equipment struct {
-	EquipmentID    int64
-	Email     string
-	CreatedAt time.Time
+	equipment_id      int64
+	name              string
+	image             []byte
+	equipment_type_id int32
+	status            bool
+	availability      bool
 }
 
 // Setup dependency injection
@@ -20,20 +23,19 @@ type EquipmentModel struct {
 }
 
 // Write SQL code to access the database
-// TODO
-// Creating a Get Method for Users table
+// Creating a Get Method for Equipment table
 func (m *EquipmentModel) Get() (*Equipment, error) {
 	var q Equipment
 
 	statement := `
 	            SELECT equipment_id, body
-				FROM equipments
-				ORDER BY RANDOM()
-				LIMIT 1
+				FROM equipment
+				LIMIT 20
 	             `
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.EquipmentID, &q.Email)
+	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.equipment_id, &q.name, &q.image,
+		&q.equipment_type_id, &q.status, &q.availability)
 	if err != nil {
 		return nil, err
 	}

@@ -9,9 +9,16 @@ import (
 
 // Let's model the users table
 type User struct {
-	UserID    int64
-	Email     string
-	CreatedAt time.Time
+	user_id      int64
+	email        string
+	first_name   string
+	last_name    string
+	dob          string
+	address      string
+	phone_number string
+	roles_id     int32
+	password     string //temporarily string will turn into hash later
+	CreatedAt    string
 }
 
 // Setup dependency injection
@@ -26,14 +33,15 @@ func (m *UserModel) Get() (*User, error) {
 	var q User
 
 	statement := `
-	            SELECT user_id, body
+	            SELECT user_id
 				FROM users
 				ORDER BY RANDOM()
-				LIMIT 1
+				LIMIT 10
 	             `
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.UserID, &q.Email)
+	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.user_id, &q.email, &q.first_name,
+		&q.last_name, &q.dob, &q.address, &q.phone_number, &q.roles_id, &q.password, &q.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
