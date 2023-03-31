@@ -17,9 +17,8 @@ import (
 
 // create a new type
 type application struct {
-	user  models.UserModel
-	users models.UserModel
-	//options models.OptionsModel
+	Users     models.UserModel
+	Equipment models.EquipmentModel
 }
 
 func main() {
@@ -37,9 +36,8 @@ func main() {
 	}
 	// create an instance of the application type
 	app := &application{
-		user: models.UserModel{DB: db},
-		//responses: models.ResponseModel{DB: db},
-		//options: models.OptionsModel{DB: db},
+		Users:     models.UserModel{DB: db},
+		Equipment: models.EquipmentModel{DB: db},
 	}
 
 	defer db.Close()
