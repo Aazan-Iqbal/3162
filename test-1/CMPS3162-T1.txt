@@ -1,0 +1,23 @@
+CMPS3162 - Test #1
+Due: April 25, 2022 at 11:30 pm
+
+Complete the following tasks.
+
+TASK: Implement CRUD functionality in your web apps.
+
+1. Place your apps under version control.
+2. Be sure to have Go templates that allows for the CRUD processes
+
+
+   
+
+Submission:
+
+1. Push test-1 to your 3162 GitHub repository. The
+   repo should resemble the structure below.
+   3162
+     |----> quiz-1        
+     |----> quiz-2
+     |----> test-1
+              
+
