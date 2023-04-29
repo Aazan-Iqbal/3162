@@ -23,24 +23,47 @@ type EquipmentModel struct {
 	DB *sql.DB
 }
 
-// Creating a Get Method for Equipment table
-func (m *EquipmentModel) Get() (*Equipment, error) {
-	var q Equipment
+// BASIC CRUD FUNCTIONS ------------------------------------------------------------
+// Creating a Read Method for Equipment table
+func (m *EquipmentModel) Read() ([]*Equipment, error) {
 
 	statement := `
 	            SELECT *
 				FROM equipment
-				ORDER BY RANDOM()
-				LIMIT 1
+				LIMIT 5
 	            `
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.equipment_id, &q.name, &q.image,
-		&q.equipment_type_id, &q.status, &q.availability)
+
+	rows, err := m.DB.Query(statement)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
-	return &q, err
+	//defer to close connection before we leave our read method
+	defer rows.Close()
+	// array to store pointers to the data we get from the form
+	equipmentList := []*Equipment{}
+
+	for i := 1; i <= 5; i++ {
+		rows.Next()
+
+		equipment := &Equipment{} //variable to hold equipment
+		err = rows.Scan(&equipment.equipment_id, &equipment.name, &equipment.image,
+			&equipment.equipment_type_id, &equipment.status, &equipment.availability)
+
+		fmt.Println(equipment.name)
+
+		equipmentList = append(equipmentList, equipment)
+		if err != nil { // check for errors appending pointers to equipment structs the list
+			fmt.Println(err)
+			return nil, err
+		}
+	} // end of for loop
+
+	//check for errors from the query
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return equipmentList, nil
 }
 
 // Creating an Insert Method that will add a piece of equipment into the database and return the ID
@@ -116,6 +139,35 @@ func (m *EquipmentModel) Delete(equip_id int64) (int64, error) {
 	return rowsAffected, nil
 }
 
+func (m *EquipmentModel) Update(equipment *Equipment) (int64, error) {
+	var id int64
+
+	//Sql statement that will be ran to insert data, will return the equipment_id which is serial and auto increments
+	statement := `
+	UPDATE equipment
+	SET name =$2, image=$3, equipment_type_id=$4, status=$5, availability=$6
+	WHERE equipment_id = $1
+	
+ `
+	//sets the timeout for the DB connection
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	//sets the timeout for the DB connection, passes the statements and associates the arguements with the place holders in the SQL ($1, $2 etc)
+	_, err := m.DB.ExecContext(ctx, statement, equipment.equipment_id, equipment.name, equipment.image,
+		equipment.equipment_type_id, equipment.status, equipment.availability)
+
+	fmt.Println(equipment.equipment_id)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	return id, err
+
+}
+
+// MAIN FUNCTIONALITY
 // function to mark a peice of equipment as borrowed in the database
 func (m *EquipmentModel) Borrow(equip_id int64) (int64, error) {
 	var id int64

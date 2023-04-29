@@ -25,7 +25,7 @@ func main() {
 	// Create a flag for specifiying the port number
 	// when starting the server
 	addr := flag.String("port", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", os.Getenv("RECSYSTEM_DB_DSN"), "PostgreSQL DSN")
+	dsn := flag.String("dsn", os.Getenv("RECSYSTEM"), "PostgreSQL DSN")
 	flag.Parse()
 
 	// Create an instance of the connection pool
