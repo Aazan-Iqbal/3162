@@ -1,0 +1,22 @@
+CMPS3162 - Test #2
+Due: May 02, 2022 at 11:30 pm
+
+Complete the following tasks.
+
+TASK: Implement authentication and testing in your apps
+
+1. Place your app under version control.
+
+
+
+Submission:
+
+1. Push test-2 to your 3162 GitHub repository. The
+   repo should resemble the structure below.
+   3162
+     |----> quiz-1        
+     |----> quiz-2
+     |----> test-1
+     |----> test-2
+              
+

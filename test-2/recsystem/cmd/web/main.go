@@ -10,13 +10,20 @@ import (
 	"os"
 	"time"
 
-	"github.com/Aazan-Iqbal/3161/quiz-2/recsystem/internal/models"
+	"github.com/Aazan-Iqbal/3161/test-2/recsystem/internal/models"
+	"github.com/alexedwards/scs/v2"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // create a new type
 type application struct {
+	// basic variables for site management
+	errorLog        *log.Logger
+	infoLog         *log.Logger
+	sessionsManager *scs.SessionManager
+
+	// variables for functionality
 	Users     models.UserModel
 	Equipment models.EquipmentModel
 }

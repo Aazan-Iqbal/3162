@@ -1,10 +1,13 @@
-module github.com/Aazan-Iqbal/3161/quiz-2/recsystem
+module github.com/Aazan-Iqbal/3161/test-2/recsystem
 
 go 1.19
 
 require (
+	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/jackc/pgx/v5 v5.3.1
 	github.com/julienschmidt/httprouter v1.3.0
+	github.com/justinas/alice v1.2.0
+	github.com/justinas/nosurf v1.1.1
 )
 
 require (

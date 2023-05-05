@@ -8,7 +8,7 @@ import (
 // handler for manage equipment
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/equipment-management.page.tmpl")
+	RenderTemplate(w, "./ui/static/html/equipment-management.page.tmpl", nil)
 
 }
 
@@ -18,57 +18,49 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 
-	} // w.Write([]byte("Welcome to my home page."))
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+	}
+	RenderTemplate(w, "./ui/static/html/home.page.tmpl", nil)
 
 }
 
 // create handler for about
 func (app *application) About(w http.ResponseWriter, r *http.Request) {
-	// RenderTemplate(w, "about.page.tmpl")
-	// day := time.Now().Weekday()
-	// w.Write([]byte(fmt.Sprintf("Welcome to my  about page, have a nice %s", day)))
 	w.Write([]byte("Hello\n"))
 }
 
 // create handler for login
 func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+	RenderTemplate(w, "./ui/static/html/login.page.tmpl", nil)
 
 }
 
-// create handler for LoginSubmit
+// create handler for submitting login information
 func (app *application) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+}
+
+
+func (app *application) userLogoutSubmit(w http.ResponseWriter, r *http.Request) {
 
 }
 
 // create handler for SignIn
 func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
-
 }
 
 // create handler for SignInSubmit
 func (app *application) SignInSubmit(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
 
 }
 
 // create handler for ScanQrCode
 func (app *application) ScanQrCode(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
-
 }
 
 // create handler for ScanQrCodeSubmit
 func (app *application) ScanQrCodeSubmit(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
 
 }
