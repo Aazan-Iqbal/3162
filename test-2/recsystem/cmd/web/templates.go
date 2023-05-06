@@ -40,8 +40,8 @@ func RenderTemplate(w http.ResponseWriter, tmpl string, data *templateData) {
 // and place into a template cache. An error is returned
 func createTemplateCache(tmpl string) error {
 	templates := []string{
-		fmt.Sprintf("./ui/static/html/%s", tmpl),
-		"./ui/html/static/base.layout.tmpl",
+		fmt.Sprintf("./ui/html/%s", tmpl),
+		"./ui/html/base.layout.tmpl",
 	}
 	ts, err := template.ParseFiles(templates...)
 	if err != nil {

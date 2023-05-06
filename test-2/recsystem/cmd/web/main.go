@@ -3,7 +3,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"database/sql"
 	"flag"
 	"log"
@@ -68,20 +67,14 @@ func main() {
 	// create and start a custom web server
 	infoLog.Printf("starting server on %s", *addr)
 
-	tlsConfig := &tls.Config{
-		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256}, // added with security
-	}
-
 	srv := &http.Server{
 		Addr:         *addr,
 		Handler:      app.routes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
-		TLSConfig:    tlsConfig,
 	}
-
-	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	err = srv.ListenAndServe()
 	log.Fatal(err)
 }
 
