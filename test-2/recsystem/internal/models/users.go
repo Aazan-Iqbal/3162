@@ -4,7 +4,17 @@ package models
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
+)
+
+// variables for possible errors
+var (
+	ErrNoRecord           = errors.New("no matching record found")
+	ErrInvalidCredentials = errors.New("invalid credentials")
+	ErrDuplicateEmail     = errors.New("duplicate email")
 )
 
 // Let's model the users table
@@ -26,8 +36,39 @@ type UserModel struct {
 	DB *sql.DB
 }
 
+func (m *UserModel) Authenticate(email, password string) (int, error) {
+	var id int
+	var hashedPassword []byte
+	//create if there is a row in the table for the email provided
+	query := `
+			SELECT id, password_hash
+			FROM users
+			WHERE email = $1
+	`
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	err := m.DB.QueryRowContext(ctx, query, email).Scan(&id, &hashedPassword)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	} //handling error
+	//the user does exist
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			return 0, ErrInvalidCredentials
+		} else {
+			return 0, err
+		}
+	}
+	//password is correct
+	return id, nil
+}
+
 // Write SQL code to access the database
-// TODO
 // Creating a Get Method for Users table
 func (m *UserModel) Get() (*User, error) {
 	var q User
