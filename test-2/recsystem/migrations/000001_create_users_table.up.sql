@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS "users" (
   "address" varchar(255) NOT NULL,
   "phone_number" varchar(255) NOT NULL,
   "roles_id" int NOT NULL REFERENCES "roles" ("roles_id"),
-  "password_hash" varchar(255) NOT NULL,
+  "password_hash" bytea NOT NULL,
   "created_at" TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW()
 
 
