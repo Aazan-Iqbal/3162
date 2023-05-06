@@ -28,11 +28,43 @@ func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) 
 
 }
 
-// create handler for login
-func (app *application) Login(w http.ResponseWriter, r *http.Request) {
-
+// --------------------sign up, log in, and out functionality----------------------
+// for user sign up
+func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 	//remove the entry from the session manager
 	flash := app.sessionsManager.PopString(r.Context(), "flash")
+	data := &templateData{
+		Flash:     flash,
+		CSRFTOKEN: nosurf.Token(r), //added for authentication
+	}
+	RenderTemplate(w, "signup.page.tmpl", data)
+}
+
+// run when user submits sign up info
+func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	name := r.PostForm.Get("name")
+	email := r.PostForm.Get("email")
+	password := r.PostForm.Get("password")
+	//write the data to the table
+	err := app.users.Insert(name, email, password)
+	log.Println(err)
+	if err != nil {
+
+		if errors.Is(err, models.ErrDuplicateEmail) {
+			RenderTemplate(w, "signup.page.tmpl", nil)
+		}
+	}
+	app.sessionsManager.Put(r.Context(), "flash", "Signup was successfil")
+	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+}
+
+// create handler for login
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
+
+	flash := app.sessionsManager.PopString(r.Context(), "flash")
+
+	//remove the entry from the session manager
 	data := &templateData{
 		Flash:     flash,
 		CSRFTOKEN: nosurf.Token(r), //added for authentication
@@ -42,7 +74,7 @@ func (app *application) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 // create handler for submitting login information
-func (app *application) LoginSubmit(w http.ResponseWriter, r *http.Request) {
+func (app *application) userLoginSubmit(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	email := r.PostForm.Get("email")
 	password := r.PostForm.Get("password")
@@ -67,15 +99,18 @@ func (app *application) LoginSubmit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userLogoutSubmit(w http.ResponseWriter, r *http.Request) {
-
+	//remove the entry from the session manager
+	err := app.sessionsManager.RenewToken(r.Context())
+	if err != nil {
+		return
+	}
 }
 
-// create handler for SignIn
+// ---------------------------------------------------------------------------
 func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// create handler for SignInSubmit
 func (app *application) SignInSubmit(w http.ResponseWriter, r *http.Request) {
 
 }

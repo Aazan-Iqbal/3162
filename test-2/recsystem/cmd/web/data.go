@@ -5,7 +5,6 @@ import "github.com/Aazan-Iqbal/3161/test-2/recsystem/internal/models"
 type templateData struct {
 	Equipment     *models.Equipment
 	Flash         string
-	EquipmentByte []*models.Equipment
 	CSRFTOKEN     string // Added for authentication
 }
 

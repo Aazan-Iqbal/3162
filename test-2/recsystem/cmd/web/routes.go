@@ -19,8 +19,10 @@ func (app *application) routes() http.Handler {
 	router.Handler(http.MethodGet, "/admin/manage-equipment", dynamicMiddleware.ThenFunc(app.ManageEquipment))
 
 	// for test-2
-	router.Handler(http.MethodGet, "/user/login", dynamicMiddleware.ThenFunc(app.Login))
-	router.Handler(http.MethodPost, "/user/login-auth", dynamicMiddleware.ThenFunc(app.LoginSubmit))
+	router.Handler(http.MethodGet, "/user/login", dynamicMiddleware.ThenFunc(app.userLogin))
+	router.Handler(http.MethodPost, "/user/login-auth", dynamicMiddleware.ThenFunc(app.userLoginSubmit))
+	router.Handler(http.MethodGet, "/user/sign-up", dynamicMiddleware.ThenFunc(app.userSignup))
+	router.Handler(http.MethodPost, "/user/sign-up-auth", dynamicMiddleware.ThenFunc(app.userSignupSubmit))
 	router.Handler(http.MethodPost, "/user/logout", dynamicMiddleware.ThenFunc(app.userLogoutSubmit))
 
 	router.HandlerFunc(http.MethodGet, "/", app.Home)

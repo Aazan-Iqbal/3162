@@ -63,10 +63,10 @@ func main() {
 	}
 
 	defer db.Close()
-	// acquired a  database connection pool
-	log.Println("database connection pool established")
-	// create customized server
-	log.Printf("Start server on port %s", *addr)
+	// acquired a database connection pool
+	infoLog.Println("database connection pool established")
+	// create and start a custom web server
+	infoLog.Printf("starting server on %s", *addr)
 
 	tlsConfig := &tls.Config{
 		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256}, // added with security

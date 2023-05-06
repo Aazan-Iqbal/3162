@@ -90,19 +90,26 @@ func (m *UserModel) Get() (*User, error) {
 }
 
 // Creating an Insert Method that will post users entered into the database
-func (m *UserModel) Insert(body string) (int64, error) {
-	var id int64
-
-	statement := `
-	            INSERT INTO users(body)
-				VALUES($1)
-				RETURNING user_id				
-	             `
+func (m *UserModel) Insert(name, email, password string) error {
+	//let's Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	if err != nil {
+		return err
+	}
+	query := `
+			INSERT INTO users(first_name, email, password_hash)
+			VALUES($1, $2, $3)
+	`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement, body).Scan(&id)
+	_, err = m.DB.ExecContext(ctx, query, name, email, hashedPassword)
 	if err != nil {
-		return 0, err
+		switch {
+		case err.Error() == `pgx: duplicate key value violates unique constraint "users_email_key"`:
+			return ErrDuplicateEmail
+		default:
+			return err
+		}
 	}
-	return id, nil
+	return nil
 }
