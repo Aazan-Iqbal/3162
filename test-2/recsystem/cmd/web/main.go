@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"database/sql"
 	"flag"
 	"log"
@@ -24,8 +25,8 @@ type application struct {
 	sessionsManager *scs.SessionManager
 
 	// variables for functionality
-	Users     models.UserModel
-	Equipment models.EquipmentModel
+	users     models.UserModel
+	equipment models.EquipmentModel
 }
 
 func main() {
@@ -41,10 +42,24 @@ func main() {
 		log.Println(err)
 		return
 	}
+
+	//create instances of errorLog & infoLog
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	// setup a new session manager
+	sessionManager := scs.New()
+	sessionManager.Lifetime = 1 * time.Hour
+	sessionManager.Cookie.Persist = true
+	sessionManager.Cookie.Secure = true                   //false if the cookies aren't secure
+	sessionManager.Cookie.SameSite = http.SameSiteLaxMode //Same site
+
 	// create an instance of the application type
 	app := &application{
-		Users:     models.UserModel{DB: db},
-		Equipment: models.EquipmentModel{DB: db},
+		errorLog:        errorLog,
+		infoLog:         infoLog,
+		sessionsManager: sessionManager,
+		users:           models.UserModel{DB: db},
+		equipment:       models.EquipmentModel{DB: db},
 	}
 
 	defer db.Close()
@@ -52,16 +67,22 @@ func main() {
 	log.Println("database connection pool established")
 	// create customized server
 	log.Printf("Start server on port %s", *addr)
-	srv := &http.Server{
-		Addr:    *addr,
-		Handler: app.routes(),
-		//IdleTimeout:  time.Minute,
-		//ReadTimeout:  5 * time.Second,
-		//WriteTimeout: 10 * time.Second,
+
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256}, // added with security
 	}
 
-	err = srv.ListenAndServe()
-	log.Fatal(err) //should not reach here
+	srv := &http.Server{
+		Addr:         *addr,
+		Handler:      app.routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		TLSConfig:    tlsConfig,
+	}
+
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
+	log.Fatal(err)
 }
 
 // Function to open the database connection and setup the database connection pool
