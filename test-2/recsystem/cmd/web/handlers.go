@@ -46,11 +46,25 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 // run when user submits sign up info
 func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
+
 	name := r.PostForm.Get("name")
 	email := r.PostForm.Get("email")
 	password := r.PostForm.Get("password")
+
+	newUser := models.User{
+		User_id:      0,
+		Email:        email,
+		First_name:   name,
+		Last_name:    "",
+		Dob:          "",
+		Address:      "",
+		Phone_number: "",
+		Roles_id:     1,
+		Password:     password,
+		CreatedAt:    "",
+	}
 	//write the data to the table
-	err := app.users.Insert(name, email, password)
+	err := app.users.Insert(newUser)
 	log.Println(err)
 	if err != nil {
 

@@ -19,15 +19,15 @@ var (
 
 // Let's model the users table
 type User struct {
-	user_id      int64
-	email        string
-	first_name   string
-	last_name    string
-	dob          string
-	address      string
-	phone_number string
-	roles_id     int32
-	password     string //temporarily string will turn into hash later
+	User_id      int64
+	Email        string
+	First_name   string
+	Last_name    string
+	Dob          string
+	Address      string
+	Phone_number string
+	Roles_id     int32
+	Password     string //temporarily string will turn into hash later
 	CreatedAt    string
 }
 
@@ -81,8 +81,8 @@ func (m *UserModel) Get() (*User, error) {
 	             `
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.user_id, &q.email, &q.first_name,
-		&q.last_name, &q.dob, &q.address, &q.phone_number, &q.roles_id, &q.password, &q.CreatedAt)
+	err := m.DB.QueryRowContext(ctx, statement).Scan(&q.User_id, &q.Email, &q.First_name,
+		&q.Last_name, &q.Dob, &q.Address, &q.Phone_number, &q.Roles_id, &q.Password, &q.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -90,19 +90,22 @@ func (m *UserModel) Get() (*User, error) {
 }
 
 // Creating an Insert Method that will post users entered into the database
-func (m *UserModel) Insert(name, email, password string) error {
+func (m *UserModel) Insert(user User) error {
 	//let's Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
 		return err
 	}
 	query := `
-			INSERT INTO users(first_name, email, password_hash)
-			VALUES($1, $2, $3)
+			INSERT INTO users(email, first_name, last_name, dob, address
+				phone_number, roles_id, password_hash)
+			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	_, err = m.DB.ExecContext(ctx, query, name, email, hashedPassword)
+	_, err = m.DB.ExecContext(ctx, query, user.Email, user.First_name,
+		user.Last_name, user.Dob, user.Address, user.Phone_number, user.Roles_id,
+		hashedPassword)
 	if err != nil {
 		switch {
 		case err.Error() == `pgx: duplicate key value violates unique constraint "users_email_key"`:
