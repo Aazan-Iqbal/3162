@@ -95,7 +95,7 @@ func (app *application) userLoginSubmit(w http.ResponseWriter, r *http.Request) 
 	}
 	// add an authenticate entry
 	app.sessionsManager.Put(r.Context(), "authenticatedUserID", id)
-	http.Redirect(w, r, "/poll/reply", http.StatusSeeOther)
+	http.Redirect(w, r, "/admin/manage-equipment", http.StatusSeeOther)
 }
 
 func (app *application) userLogoutSubmit(w http.ResponseWriter, r *http.Request) {
