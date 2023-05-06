@@ -24,7 +24,10 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 // handler for manage equipment
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "equipment-management.page.tmpl", nil)
+	data := &templateData{
+		CSRFTOKEN: nosurf.Token(r), //added for authentication
+	}
+	RenderTemplate(w, "equipment-management.page.tmpl", data)
 
 }
 
