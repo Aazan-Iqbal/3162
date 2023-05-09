@@ -10,15 +10,22 @@ import (
 	"os"
 	"time"
 
-	"github.com/Aazan-Iqbal/3161/quiz-2/recsystem/internal/models"
+	"github.com/Aazan-Iqbal/3161/test-1/recsystem/internal/models"
+	"github.com/alexedwards/scs/v2"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 // create a new type
 type application struct {
-	Users     models.UserModel
-	Equipment models.EquipmentModel
+	// basic variables for site management
+	errorLog        *log.Logger
+	infoLog         *log.Logger
+	sessionsManager *scs.SessionManager
+
+	// variables for functionality
+	users     models.UserModel
+	equipment models.EquipmentModel
 }
 
 func main() {
@@ -34,27 +41,41 @@ func main() {
 		log.Println(err)
 		return
 	}
+
+	//create instances of errorLog & infoLog
+	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	// setup a new session manager
+	sessionManager := scs.New()
+	sessionManager.Lifetime = 1 * time.Hour
+	sessionManager.Cookie.Persist = true
+	sessionManager.Cookie.Secure = true                   //false if the cookies aren't secure
+	sessionManager.Cookie.SameSite = http.SameSiteLaxMode //Same site
+
 	// create an instance of the application type
 	app := &application{
-		Users:     models.UserModel{DB: db},
-		Equipment: models.EquipmentModel{DB: db},
+		errorLog:        errorLog,
+		infoLog:         infoLog,
+		sessionsManager: sessionManager,
+		users:           models.UserModel{DB: db},
+		equipment:       models.EquipmentModel{DB: db},
 	}
 
 	defer db.Close()
-	// acquired a  database connection pool
-	log.Println("database connection pool established")
-	// create customized server
-	log.Printf("Start server on port %s", *addr)
-	srv := &http.Server{
-		Addr:    *addr,
-		Handler: app.routes(),
-		//IdleTimeout:  time.Minute,
-		//ReadTimeout:  5 * time.Second,
-		//WriteTimeout: 10 * time.Second,
-	}
+	// acquired a database connection pool
+	infoLog.Println("database connection pool established")
+	// create and start a custom web server
+	infoLog.Printf("starting server on %s", *addr)
 
+	srv := &http.Server{
+		Addr:         *addr,
+		Handler:      app.routes(),
+		IdleTimeout:  time.Minute,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
 	err = srv.ListenAndServe()
-	log.Fatal(err) //should not reach here
+	log.Fatal(err)
 }
 
 // Function to open the database connection and setup the database connection pool

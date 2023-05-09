@@ -48,6 +48,13 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 
 // run when user submits sign up info
 func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request) {
+	flash := app.sessionsManager.PopString(r.Context(), "flash")
+	//remove the entry from the session manager
+	data := &templateData{
+		Flash:     flash,
+		CSRFTOKEN: nosurf.Token(r), //added for authentication
+	}
+
 	r.ParseForm()
 
 	fname := r.PostForm.Get("fname")
@@ -76,7 +83,7 @@ func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 
 		if errors.Is(err, models.ErrDuplicateEmail) {
-			RenderTemplate(w, "signup.page.tmpl", nil)
+			RenderTemplate(w, "signup.page.tmpl", data)
 		}
 	}
 	app.sessionsManager.Put(r.Context(), "flash", "Signup was successful")
@@ -98,6 +105,13 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 
 // create handler for submitting login information
 func (app *application) userLoginSubmit(w http.ResponseWriter, r *http.Request) {
+
+	flash := app.sessionsManager.PopString(r.Context(), "flash")
+	//remove the entry from the session manager
+	data := &templateData{
+		Flash:     flash,
+		CSRFTOKEN: nosurf.Token(r), //added for authentication
+	}
 	r.ParseForm()
 	email := r.PostForm.Get("email")
 	password := r.PostForm.Get("password")
@@ -107,7 +121,8 @@ func (app *application) userLoginSubmit(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 
 		if errors.Is(err, models.ErrInvalidCredentials) {
-			RenderTemplate(w, "login.page.tmpl", nil)
+
+			RenderTemplate(w, "login.page.tmpl", data)
 		}
 		return
 	}

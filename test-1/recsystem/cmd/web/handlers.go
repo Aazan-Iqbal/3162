@@ -2,15 +2,10 @@ package main
 
 import (
 	"net/http"
+
+	"github.com/justinas/nosurf"
 	//"strconv"
 )
-
-// handler for manage equipment
-func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/equipment-management.page.tmpl")
-
-}
 
 // create handler for home
 func (app *application) Home(w http.ResponseWriter, r *http.Request) {
@@ -18,57 +13,68 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 
-	} // w.Write([]byte("Welcome to my home page."))
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+	}
+	RenderTemplate(w, "home.page.tmpl", nil)
 
 }
 
-// create handler for about
-func (app *application) About(w http.ResponseWriter, r *http.Request) {
-	// RenderTemplate(w, "about.page.tmpl")
-	// day := time.Now().Weekday()
-	// w.Write([]byte(fmt.Sprintf("Welcome to my  about page, have a nice %s", day)))
-	w.Write([]byte("Hello\n"))
+// handler for manage equipment
+func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
+
+	flash := app.sessionsManager.PopString(r.Context(), "flash")
+
+	data := &templateData{
+		Flash:     flash,
+		CSRFTOKEN: nosurf.Token(r), //added for authentication
+	}
+	RenderTemplate(w, "equipment-management.page.tmpl", data)
+
+}
+
+// --------------------sign up, log in, and out functionality----------------------
+// for user sign up
+func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// run when user submits sign up info
+func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request) {
+
 }
 
 // create handler for login
-func (app *application) Login(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// create handler for LoginSubmit
-func (app *application) LoginSubmit(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+// create handler for submitting login information
+func (app *application) userLoginSubmit(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// create handler for SignIn
+func (app *application) userLogoutSubmit(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// ---------------------------------------------------------------------------
 func (app *application) SignIn(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
-
 }
 
-// create handler for SignInSubmit
 func (app *application) SignInSubmit(w http.ResponseWriter, r *http.Request) {
-
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
 
 }
 
 // create handler for ScanQrCode
 func (app *application) ScanQrCode(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
-
 }
 
 // create handler for ScanQrCodeSubmit
 func (app *application) ScanQrCodeSubmit(w http.ResponseWriter, r *http.Request) {
 
-	RenderTemplate(w, "./ui/static/html/home.page.tmpl")
+}
 
+// create handler for about
+func (app *application) About(w http.ResponseWriter, r *http.Request) {
 }

@@ -1,29 +1,28 @@
 package main
 
 import (
-	"html/template"
-	"log"
+	"fmt"
 	"net/http"
-
-	"github.com/Aazan-Iqbal/3161/quiz-2/recsystem/internal/models"
+	"runtime/debug"
 )
 
-func RenderTemplate(w http.ResponseWriter, tmpl string) {
-	//w.Write([]byte("Welcome to Polly!"))
-	ts, err := template.ParseFiles(tmpl)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-		return
-	}
-	err = ts.Execute(w, nil)
-	if err != nil {
-		log.Print(err.Error())
-		http.Error(w, "Internal Server Error", 500)
-
-	}
+func (app *application) serverError(w http.ResponseWriter, err error) {
+	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
+	app.errorLog.Output(2, trace)
+	// deal with the error status
+	http.Error(w,
+		http.StatusText(http.StatusInternalServerError),
+		http.StatusInternalServerError)
 }
 
-func equipmentData(equipmentData *models.Equipment) *models.Equipment {
-	return equipmentData
+func (app *application) clientError(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
+}
+
+func (app *application) notFound(w http.ResponseWriter) {
+	app.clientError(w, http.StatusNotFound)
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	return app.sessionsManager.Exists(r.Context(), "authenticatedUserID")
 }
