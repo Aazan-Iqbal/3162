@@ -22,6 +22,15 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 // handler for manage equipment and diplaying equipment list
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
+	// list, err := app.equipment.Read()
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
+
+	// data := &templateData{
+	// 	Equipment: list,
+	// }
 	RenderTemplate(w, "equipment-management.page.tmpl", nil)
 
 }
