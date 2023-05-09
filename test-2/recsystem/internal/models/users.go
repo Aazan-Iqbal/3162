@@ -61,7 +61,6 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 		}
 	} //handling error
 	//the user does exist
-
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
@@ -100,6 +99,7 @@ func (m *UserModel) Get() (*User, error) {
 // Creating an Insert Method that will post users entered into the database
 func (m *UserModel) Insert(user User) error {
 	//let's Hash the password
+	log.Println(user.Password)
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
 		return err

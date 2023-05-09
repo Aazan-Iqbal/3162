@@ -57,6 +57,7 @@ func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request)
 
 	email := r.PostForm.Get("email")
 	password := r.PostForm.Get("password")
+	log.Println(password)
 
 	newUser := models.User{
 		Email:        email,
@@ -78,7 +79,7 @@ func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request)
 			RenderTemplate(w, "signup.page.tmpl", nil)
 		}
 	}
-	app.sessionsManager.Put(r.Context(), "flash", "Signup was successfil")
+	app.sessionsManager.Put(r.Context(), "flash", "Signup was successful")
 	http.Redirect(w, r, "/user/login", http.StatusSeeOther)
 }
 
