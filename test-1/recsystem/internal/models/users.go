@@ -37,44 +37,6 @@ type UserModel struct {
 	DB *sql.DB
 }
 
-func (m *UserModel) Authenticate(email, password string) (int, error) {
-	log.Println(password)
-	var id int
-
-	var hashedPassword []byte
-	//check if there is a row in the table for the email provided
-	query := `
-			SELECT user_id, password_hash
-			FROM users
-			WHERE email = $1
-	`
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-	defer cancel()
-	err := m.DB.QueryRowContext(ctx, query, email).Scan(&id, &hashedPassword)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			log.Println("user does not exist/wrong email")
-			return 0, ErrInvalidCredentials
-
-		} else {
-			return 0, err
-		}
-	} //handling error
-	//the user does exist
-	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
-	if err != nil {
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			log.Println("Incorrect Password")
-			return 0, ErrInvalidCredentials
-		} else {
-			return 0, err
-		}
-	}
-	log.Println("password is correct.")
-	//password is correct
-	return id, nil
-}
-
 // Write SQL code to access the database
 // Creating a Get Method for Users table
 func (m *UserModel) Get() (*User, error) {

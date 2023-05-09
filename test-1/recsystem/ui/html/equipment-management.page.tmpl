@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Equipment Manager</title>
+  </head>
+  <body>
+    <h1>Equipment Manager</h1>
+
+    <h2>Add Equipment</h2>
+    <form method="post" action="/admin/add-equipment">
+      <label for="name">Name:</label>
+      <input type="text" name="name"><br>
+
+      <label for="image">Image:</label>
+      <input type="file" name="image"><br>
+
+      <label for="equipment_type_id">Equipment Type ID:</label>
+      <input type="number" name="equipment_type_id"><br>
+
+      <label for="status">Status:</label>
+      <input type="checkbox" name="status" value="1"><br>
+
+      <label for="availability">Availability:</label>
+      <input type="checkbox" name="availability" value="1"><br>
+
+      <input type="submit" value="Add">
+    </form>
+
+    <hr>
+
+   
+  </body>
+</html>

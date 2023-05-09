@@ -1,9 +1,9 @@
 package main
 
 import (
+	"log"
 	"net/http"
-
-	"github.com/justinas/nosurf"
+	"strconv"
 	//"strconv"
 )
 
@@ -18,20 +18,45 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handler for manage equipment
+// ----------------------HANDLERS FOR MANAGING EQUIPMENT---------------------------
+// handler for manage equipment and diplaying equipment list
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
-	flash := app.sessionsManager.PopString(r.Context(), "flash")
-
-	data := &templateData{
-		Flash:     flash,
-		CSRFTOKEN: nosurf.Token(r), //added for authentication
-	}
-	RenderTemplate(w, "equipment-management.page.tmpl", data)
+	RenderTemplate(w, "equipment-management.page.tmpl", nil)
 
 }
 
-// --------------------sign up, log in, and out functionality----------------------
+func (app *application) AddEquipment(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil { // check for errors in parsing form
+		http.Error(w, "bad request", http.StatusBadRequest)
+	}
+	name := r.PostForm.Get("name")
+	image := r.PostForm.Get("image")
+	equipment_type_id, err := strconv.ParseInt(r.PostForm.Get("equipment_type_id"), 10, 64)
+	status, err := strconv.ParseBool(r.PostForm.Get("status"))
+	availability, err := strconv.ParseBool(r.PostForm.Get("availability"))
+	log.Printf("%s, %s, %v, %v, %v, \n", name, image, equipment_type_id, status, availability)
+
+	err = app.equipment.Insert(name, []byte(image), equipment_type_id, status, availability)
+	if err != nil {
+		log.Println(err)
+	}
+	http.Redirect(w, r, "/admin/manage-equipment", http.StatusSeeOther)
+}
+func (app *application) EditEquipment(w http.ResponseWriter, r *http.Request) {
+
+}
+func (app *application) UpdateEquipment(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func (app *application) DeleteEquipment(w http.ResponseWriter, r *http.Request) {
+
+}
+
+//---------------------------END OF EQUIPMENT HANDLERS----------------------------
+
 // for user sign up
 func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 
