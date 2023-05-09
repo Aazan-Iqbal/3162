@@ -1,1 +1,1 @@
-DELETE FROM "equipment_types" CASCADE;
+DELETE FROM "equipment_types";

@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -37,11 +38,13 @@ type UserModel struct {
 }
 
 func (m *UserModel) Authenticate(email, password string) (int, error) {
+	log.Println(password)
 	var id int
+
 	var hashedPassword []byte
-	//create if there is a row in the table for the email provided
+	//check if there is a row in the table for the email provided
 	query := `
-			SELECT id, password_hash
+			SELECT user_id, password_hash
 			FROM users
 			WHERE email = $1
 	`
@@ -50,20 +53,25 @@ func (m *UserModel) Authenticate(email, password string) (int, error) {
 	err := m.DB.QueryRowContext(ctx, query, email).Scan(&id, &hashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
+			log.Println("user does not exist/wrong email")
 			return 0, ErrInvalidCredentials
+
 		} else {
 			return 0, err
 		}
 	} //handling error
 	//the user does exist
+
 	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			log.Println("Incorrect Password")
 			return 0, ErrInvalidCredentials
 		} else {
 			return 0, err
 		}
 	}
+	log.Println("password is correct.")
 	//password is correct
 	return id, nil
 }
@@ -97,7 +105,7 @@ func (m *UserModel) Insert(user User) error {
 		return err
 	}
 	query := `
-			INSERT INTO users(email, first_name, last_name, dob, address
+			INSERT INTO users(email, first_name, last_name, dob, address,
 				phone_number, roles_id, password_hash)
 			VALUES($1, $2, $3, $4, $5, $6, $7, $8)
 	`

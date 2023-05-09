@@ -1,6 +1,6 @@
 {{template "base" .}}
 {{define "content"}}
-<form action="/signup" method="POST" novalidate>
+<form action="/user/sign-up" method="POST" novalidate>
   <input type="hidden" name="csrf_token" value="{{.CSRFTOKEN}}"/>  
   <div>
     <label>First Name:</label>
@@ -16,7 +16,7 @@
   </div>
   <div>
     <label>Address</label>
-    <input type="text" name="addres"/>
+    <input type="text" name="address"/>
   </div>
   <div>
     <label>Phone Number:</label>

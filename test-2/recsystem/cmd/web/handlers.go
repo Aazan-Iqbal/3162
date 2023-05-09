@@ -24,7 +24,10 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 // handler for manage equipment
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
+	flash := app.sessionsManager.PopString(r.Context(), "flash")
+
 	data := &templateData{
+		Flash:     flash,
 		CSRFTOKEN: nosurf.Token(r), //added for authentication
 	}
 	RenderTemplate(w, "equipment-management.page.tmpl", data)
@@ -47,18 +50,21 @@ func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
 func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
-	name := r.PostForm.Get("name")
+	fname := r.PostForm.Get("fname")
+	lname := r.PostForm.Get("lname")
+	address := r.PostForm.Get("address")
+	phone_number := r.PostForm.Get("phone_number")
+
 	email := r.PostForm.Get("email")
 	password := r.PostForm.Get("password")
 
 	newUser := models.User{
-		User_id:      0,
 		Email:        email,
-		First_name:   name,
-		Last_name:    "",
+		First_name:   fname,
+		Last_name:    lname,
 		Dob:          "",
-		Address:      "",
-		Phone_number: "",
+		Address:      address,
+		Phone_number: phone_number,
 		Roles_id:     1,
 		Password:     password,
 		CreatedAt:    "",
@@ -80,7 +86,6 @@ func (app *application) userSignupSubmit(w http.ResponseWriter, r *http.Request)
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 
 	flash := app.sessionsManager.PopString(r.Context(), "flash")
-
 	//remove the entry from the session manager
 	data := &templateData{
 		Flash:     flash,
