@@ -46,7 +46,6 @@ func (app *application) RecoverPanicMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-// Everything below this was added
 func (app *application) requireAuthenticationMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !app.isAuthenticated(r) {

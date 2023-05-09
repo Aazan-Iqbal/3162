@@ -25,7 +25,7 @@ type EquipmentModel struct {
 
 // BASIC CRUD FUNCTIONS ------------------------------------------------------------
 // Creating a Read Method for Equipment table
-func (m *EquipmentModel) Read() ([]*Equipment, error) {
+func (m *EquipmentModel) Read() (*Equipment, error) {
 
 	statement := `
 	            SELECT *
@@ -41,29 +41,26 @@ func (m *EquipmentModel) Read() ([]*Equipment, error) {
 	//defer to close connection before we leave our read method
 	defer rows.Close()
 	// array to store pointers to the data we get from the form
-	equipmentList := []*Equipment{}
 
-	for i := 1; i <= 5; i++ {
-		rows.Next()
+	rows.Next()
 
-		equipment := &Equipment{} //variable to hold equipment
-		err = rows.Scan(&equipment.equipment_id, &equipment.name, &equipment.image,
-			&equipment.equipment_type_id, &equipment.status, &equipment.availability)
+	var equipment Equipment //variable to hold equipment
+	err = rows.Scan(&equipment.equipment_id, &equipment.name, &equipment.image,
+		&equipment.equipment_type_id, &equipment.status, &equipment.availability)
 
-		fmt.Println(equipment.name)
+	fmt.Println(equipment.name)
 
-		equipmentList = append(equipmentList, equipment)
-		if err != nil { // check for errors appending pointers to equipment structs the list
-			fmt.Println(err)
-			return nil, err
-		}
-	} // end of for loop
+	// equipmentList = append(equipmentList, equipment)
+	// if err != nil { // check for errors appending pointers to equipment structs the list
+	// 	fmt.Println(err)
+	// 	return nil, err
+	// }
 
 	//check for errors from the query
 	if err = rows.Err(); err != nil {
 		return nil, err
 	}
-	return equipmentList, nil
+	return &equipment, nil
 }
 
 // Creating an Insert Method that will add a piece of equipment into the database and return the ID

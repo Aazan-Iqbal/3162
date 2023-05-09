@@ -27,8 +27,13 @@ func (app *application) Home(w http.ResponseWriter, r *http.Request) {
 func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) {
 
 	flash := app.sessionsManager.PopString(r.Context(), "flash")
-
+	// equip, err := app.equipment.Read()
+	// if err != nil {
+	// 	log.Println(err)
+	// 	return
+	// }
 	data := &templateData{
+		// Equipment: equip,
 		Flash:     flash,
 		CSRFTOKEN: nosurf.Token(r), //added for authentication
 	}
@@ -37,6 +42,7 @@ func (app *application) ManageEquipment(w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *application) AddEquipment(w http.ResponseWriter, r *http.Request) {
+
 	err := r.ParseForm()
 	if err != nil { // check for errors in parsing form
 		http.Error(w, "bad request", http.StatusBadRequest)

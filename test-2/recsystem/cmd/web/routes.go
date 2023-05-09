@@ -19,6 +19,10 @@ func (app *application) routes() http.Handler {
 
 	// For test 1 crud
 	router.Handler(http.MethodGet, "/admin/manage-equipment", protected.ThenFunc(app.ManageEquipment))
+	router.Handler(http.MethodPost, "/admin/add-equipment", protected.ThenFunc(app.AddEquipment))
+	router.Handler(http.MethodPost, "/admin/edit-equipment", protected.ThenFunc(app.EditEquipment))
+	router.Handler(http.MethodPost, "/admin/update-equipment", protected.ThenFunc(app.UpdateEquipment))
+	router.Handler(http.MethodPost, "/admin/delete-equipment", protected.ThenFunc(app.DeleteEquipment))
 
 	// for test-2
 	router.Handler(http.MethodGet, "/user/login", dynamicMiddleware.ThenFunc(app.userLogin))
