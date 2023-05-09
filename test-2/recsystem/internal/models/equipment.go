@@ -67,8 +67,8 @@ func (m *EquipmentModel) Read() ([]*Equipment, error) {
 }
 
 // Creating an Insert Method that will add a piece of equipment into the database and return the ID
-func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int32,
-	status bool, availability bool) (int64, error) {
+func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int64,
+	status bool, availability bool) error {
 
 	sql := `
 	INSERT INTO equipment (name, image, equipment_type_id, status, availability)
@@ -79,19 +79,19 @@ func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int
 	// defer cancel()
 	statement, err := m.DB.Prepare(sql)
 	if err != nil {
-		return 0, err
+		return err
 	}
 	defer statement.Close()
 
 	result, err := statement.Exec(name, image, equipment_type_id, status, availability)
 	// err := m.DB.QueryRowContext(ctx, statement, name /*image,*/, equipment_type_id, status, availability).Scan(&id)
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	if rowsAffected == 1 {
@@ -100,7 +100,7 @@ func (m *EquipmentModel) Insert(name string, image []byte, equipment_type_id int
 		fmt.Println("Insertion failed")
 	}
 
-	return rowsAffected, nil
+	return nil
 }
 
 // function to delete a piece of equipment from the database
